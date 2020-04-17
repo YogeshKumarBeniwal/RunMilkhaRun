@@ -6,12 +6,15 @@ public class PlayerController : MonoBehaviour
 {
     public ParticleSystem explosionParticles;
     public ParticleSystem dirtParticles;
+    public AudioClip jumpAudioClip;
+    public AudioClip deathAudioClip;
 
     [SerializeField]
     private float jumpForse = 10f;
     [SerializeField]
     private float gravityMultiplier = 1;
 
+    private AudioSource playerAudioSource;
     private Animator playerAnim;
     private static bool isGameOver = false;
     private Rigidbody playerRB;
@@ -31,6 +34,7 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        playerAudioSource = GetComponent<AudioSource>();
         playerAnim = GetComponent<Animator>();
         playerRB = GetComponent<Rigidbody>();
         Physics.gravity *= gravityMultiplier;
@@ -41,6 +45,7 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space) && isOnGround && !IsGameOver)
         {
+            playerAudioSource.PlayOneShot(jumpAudioClip, 1f);
             dirtParticles.Stop();
             isOnGround = false;
             playerAnim.SetTrigger("Jump_trig");
@@ -57,6 +62,7 @@ public class PlayerController : MonoBehaviour
         }
         else if(collision.gameObject.tag == "Obstracle")
         {
+            playerAudioSource.PlayOneShot(deathAudioClip, 1f);
             playerAnim.SetBool("Death_b", true);
             playerAnim.SetInteger("DeathType_int", 1);
             isGameOver = true;
