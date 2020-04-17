@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public ParticleSystem explosionParticles;
+    public ParticleSystem dirtParticles;
+
     [SerializeField]
     private float jumpForse = 10f;
     [SerializeField]
@@ -38,6 +41,7 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space) && isOnGround && !IsGameOver)
         {
+            dirtParticles.Stop();
             isOnGround = false;
             playerAnim.SetTrigger("Jump_trig");
             playerRB.AddForce(Vector3.up * jumpForse, ForceMode.Impulse);
@@ -46,8 +50,9 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.tag == "Ground")
+        if(collision.gameObject.tag == "Ground" && !isGameOver)
         {
+            dirtParticles.Play();
             isOnGround = true;
         }
         else if(collision.gameObject.tag == "Obstracle")
@@ -55,6 +60,8 @@ public class PlayerController : MonoBehaviour
             playerAnim.SetBool("Death_b", true);
             playerAnim.SetInteger("DeathType_int", 1);
             isGameOver = true;
+            dirtParticles.Stop();
+            explosionParticles.Play();
             onPlayerDie();
         }
     }
